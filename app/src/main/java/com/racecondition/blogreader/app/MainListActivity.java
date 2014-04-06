@@ -1,10 +1,14 @@
 package com.racecondition.blogreader.app;
 
 import android.app.ListActivity;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -23,48 +27,63 @@ public class MainListActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_list);
 
-        GetBlogPostsTask getBlogPostsTask = new GetBlogPostsTask();
-        getBlogPostsTask.execute();
+        if (isNetworkAvailable()) {
+            GetBlogPostsTask getBlogPostsTask = new GetBlogPostsTask();
+            getBlogPostsTask.execute();
+        } else {
+            Toast.makeText(this, "Network is unavailable!", Toast.LENGTH_LONG).show();
+        }
         //Toast.makeText(this, getString(R.string.no_items), Toast.LENGTH_LONG).show();
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_list, menu);
-        return true;
+        boolean isAvailable = false;
+        if (networkInfo != null && networkInfo.isConnected()) {
+            isAvailable = true;
+        }
+        return isAvailable;
     }
 
-    private class GetBlogPostsTask extends AsyncTask<Object, Void, String> {
 
         @Override
-        protected String doInBackground(Object... args) {
-            int responseCode = -1;
+        public boolean onCreateOptionsMenu (Menu menu){
+            // Inflate the menu; this adds items to the action bar if it is present.
+            getMenuInflater().inflate(R.menu.main_list, menu);
+            return true;
+        }
 
-            try {
-                URL blogFeedUrl = new URL("http://blog.teamtreehouse.com/api/get_recent_summary/?count=" + NUMBER_OF_POSTS);
-                HttpURLConnection connection = (HttpURLConnection) blogFeedUrl.openConnection();
-                connection.connect();
+        private class GetBlogPostsTask extends AsyncTask<Object, Void, String> {
 
-                responseCode = connection.getResponseCode();
-                Log.i(TAG, "Code: " + responseCode);
-            }
-            catch (MalformedURLException e) {
-                Log.e(TAG, "MalformedURLException caught by Developer: ", e);
-            }
-            catch (IOException e) {
-                Log.e(TAG, "IOException caught by Developer: ", e);
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Exception caught by Developer: ", e);
-            }
+            @Override
+            protected String doInBackground(Object... args) {
+                int responseCode = -1;
 
-            return "Code: " + responseCode;
+                try {
+                    URL blogFeedUrl = new URL("http://blog.teamtreehouse.com/api/get_recent_summary/?count=" + NUMBER_OF_POSTS);
+                    HttpURLConnection connection = (HttpURLConnection) blogFeedUrl.openConnection();
+                    connection.connect();
+
+                    responseCode = connection.getResponseCode();
+                    Log.i(TAG, "Code: " + responseCode);
+                } catch (MalformedURLException e) {
+                    Log.e(TAG, "MalformedURLException caught by Developer: ", e);
+                } catch (IOException e) {
+                    Log.e(TAG, "IOException caught by Developer: ", e);
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception caught by Developer: ", e);
+                }
+
+                return "Code: " + responseCode;
+            }
         }
     }
-}
+
+
+
 
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {
