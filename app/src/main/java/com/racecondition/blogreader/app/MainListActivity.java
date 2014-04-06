@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -22,8 +24,20 @@ public class MainListActivity extends ListActivity {
 
         try {
             URL blogFeedUrl = new URL("http://blog.teamtreehouse.com/api/get_recent_summary/?count=" + NUMBER_OF_POSTS);
-        } catch (MalformedURLException e) {
-            Log.e(TAG, "Exception caught: ", e);
+            HttpURLConnection connection = (HttpURLConnection) blogFeedUrl.openConnection();
+            connection.connect();
+
+            int responseCode = connection.getResponseCode();
+            Log.i(TAG, "Code: " + responseCode);
+        }
+        catch (MalformedURLException e) {
+            Log.e(TAG, "MalformedURLException caught by Developer: ", e);
+        }
+        catch (IOException e) {
+            Log.e(TAG, "IOException caught by Developer: ", e);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Exception caught by Developer: ", e);
         }
 
 
