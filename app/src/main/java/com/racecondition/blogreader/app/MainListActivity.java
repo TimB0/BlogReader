@@ -6,10 +6,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -69,8 +72,20 @@ public class MainListActivity extends ListActivity {
             }
             else {
                 try {
-                    Log.d(TAG, mBlogData.toString(2));
-                } catch (JSONException e) {
+                    JSONArray jsonPosts = mBlogData.getJSONArray("posts");
+                    mBlogPostTitles = new String[jsonPosts.length()];
+                    for (int i = 0; i < jsonPosts.length(); i++) {
+                        JSONObject post = jsonPosts.getJSONObject(i);
+                        String title = post.getString("title");
+                        title = Html.fromHtml(title).toString();
+                        mBlogPostTitles[i] = title;
+                    }
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                            android.R.layout.simple_list_item_1, mBlogPostTitles);
+                    setListAdapter(adapter);
+                }
+                catch (JSONException e) {
                     Log.e(TAG, "JSONException caught!", e);
                 }
             }
