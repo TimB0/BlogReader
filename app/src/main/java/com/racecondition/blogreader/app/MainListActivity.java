@@ -11,6 +11,9 @@ import android.view.Menu;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -68,12 +71,26 @@ public class MainListActivity extends ListActivity {
                     connection.connect();
 
                     responseCode = connection.getResponseCode();
-                    Log.i(TAG, "Code: " + responseCode);
-                } catch (MalformedURLException e) {
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        InputStream inputStream = connection.getInputStream();
+                        Reader reader = new InputStreamReader(inputStream);
+                        int contentLength = connection.getContentLength();
+                        char[] charArray = new char[contentLength];
+                        reader.read(charArray);
+                        String responseData = new String(charArray);
+                        Log.v(TAG, responseData);
+                    }
+                    else {
+                        Log.i(TAG, "Unsuccessful HTTP Response Code: " + responseCode);
+                    }
+                }
+                catch (MalformedURLException e) {
                     Log.e(TAG, "MalformedURLException caught by Developer: ", e);
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     Log.e(TAG, "IOException caught by Developer: ", e);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     Log.e(TAG, "Exception caught by Developer: ", e);
                 }
 
