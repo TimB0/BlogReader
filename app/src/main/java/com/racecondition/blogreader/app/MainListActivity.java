@@ -69,6 +69,7 @@ public class MainListActivity extends ListActivity {
         if (networkInfo != null && networkInfo.isConnected()) {
             isAvailable = true;
         }
+        Log.v(TAG, "Network is " + isAvailable);
         return isAvailable;
     }
 
