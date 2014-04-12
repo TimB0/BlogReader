@@ -18,8 +18,10 @@
         <item>"Froyo"</item>
         <item>"Gingerbread"</item>
         <item>"Honeycomb"</item>
-            <item>"Ice Cream Sandwich"</item>
-            <item>"Jelly Bean"</item>
+        <item>"Ice Cream Sandwich"</item>
+        <item>"Jelly Bean"</item>
     </string-array>
+
+    <string name="title_activity_blog_web_view">BlogWebViewActivity</string>
 
 </resources>
