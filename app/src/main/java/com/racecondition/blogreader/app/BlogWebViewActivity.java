@@ -51,7 +51,7 @@ public class BlogWebViewActivity extends ActionBarActivity {
 
     private void sharePost() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plan");
+        shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, mUrl);
         startActivity(Intent.createChooser(shareIntent, getString(R.string.share_chooser_title)));
     }
