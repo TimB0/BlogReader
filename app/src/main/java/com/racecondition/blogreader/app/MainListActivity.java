@@ -3,14 +3,16 @@ package com.racecondition.blogreader.app;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -33,7 +35,7 @@ import java.util.HashMap;
 
 public class MainListActivity extends ListActivity {
 
-    public static final int NUMBER_OF_POSTS = 20;
+    public static final int NUMBER_OF_POSTS = 45;
     public static final String TAG = MainListActivity.class.getSimpleName();
     protected JSONObject mBlogData;
     protected ProgressBar mProgressBar;
@@ -60,6 +62,26 @@ public class MainListActivity extends ListActivity {
         //Toast.makeText(this, getString(R.string.no_items), Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        try {
+            JSONArray jsonPosts = mBlogData.getJSONArray("posts");
+            JSONObject jsonPost = jsonPosts.getJSONObject(position);
+            String blogUrl = jsonPost.getString("url");
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(blogUrl));
+            startActivity(intent);
+        }
+        catch (JSONException e) {
+            logException(e);
+        }
+    }
+
+    private void logException(Exception e) {
+        Log.e(TAG, "Exception Caught!", e);
+    }
+
     private boolean isNetworkAvailable() {
         ConnectivityManager manager = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -73,54 +95,43 @@ public class MainListActivity extends ListActivity {
         return isAvailable;
     }
 
+    public void handleBlogResponse() {
+        mProgressBar.setVisibility(View.INVISIBLE);
 
-        @Override
-        public boolean onCreateOptionsMenu (Menu menu){
-            // Inflate the menu; this adds items to the action bar if it is present.
-            getMenuInflater().inflate(R.menu.main_list, menu);
-            return true;
-        }
+        if (mBlogData == null) {
+            updateDisplayForError();
+        } else {
+            try {
+                JSONArray jsonPosts = mBlogData.getJSONArray("posts");
+                ArrayList<HashMap<String, String>> blogPosts =
+                        new ArrayList<HashMap<String, String>>();
+                for (int i = 0; i < jsonPosts.length(); i++) {
+                    JSONObject post = jsonPosts.getJSONObject(i);
+                    String title = post.getString(KEY_TITLE);
+                    title = Html.fromHtml(title).toString();
+                    String author = post.getString(KEY_AUTHOR);
+                    author = Html.fromHtml(author).toString();
 
-        public void handleBlogResponse() {
-            mProgressBar.setVisibility(View.INVISIBLE);
+                    HashMap<String, String> blogPost = new HashMap<String, String>();
+                    blogPost.put(KEY_TITLE, title);
+                    blogPost.put(KEY_AUTHOR, author);
 
-            if (mBlogData == null) {
-                updateDisplayForError();
-            }
-            else {
-                try {
-                    JSONArray jsonPosts = mBlogData.getJSONArray("posts");
-                    ArrayList<HashMap<String, String>> blogPosts =
-                            new ArrayList<HashMap<String, String>>();
-                    for (int i = 0; i < jsonPosts.length(); i++) {
-                        JSONObject post = jsonPosts.getJSONObject(i);
-                        String title = post.getString(KEY_TITLE);
-                        title = Html.fromHtml(title).toString();
-                        String author = post.getString(KEY_AUTHOR);
-                        author = Html.fromHtml(author).toString();
+                    blogPosts.add(blogPost);
 
-                        HashMap<String, String> blogPost = new HashMap<String, String>();
-                        blogPost.put(KEY_TITLE, title);
-                        blogPost.put(KEY_AUTHOR, author);
-
-                        blogPosts.add(blogPost);
-
-                    }
-
-                    String[] keys = { KEY_TITLE, KEY_AUTHOR };
-                    int[] ids = { android.R.id.text1, android.R.id.text2 };
-                    SimpleAdapter adapter = new SimpleAdapter(this, blogPosts,
-                            android.R.layout.simple_list_item_2,
-                            keys, ids);
-
-                    setListAdapter(adapter);
                 }
-                catch (JSONException e) {
-                    Log.e(TAG, "JSONException caught!", e);
-                }
-            }
 
+                String[] keys = {KEY_TITLE, KEY_AUTHOR};
+                int[] ids = {android.R.id.text1, android.R.id.text2};
+                SimpleAdapter adapter = new SimpleAdapter(this, blogPosts,
+                        android.R.layout.simple_list_item_2,
+                        keys, ids);
+
+                setListAdapter(adapter);
+            } catch (JSONException e) {
+                logException(e);
+            }
         }
+    }
 
     private void updateDisplayForError() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -169,8 +180,7 @@ public class MainListActivity extends ListActivity {
                     Log.e(TAG, "IOException caught by Developer: ", e);
                 }
                 catch (Exception e) {
-                    Log.e(TAG, "Exception caught by Developer: ", e);
-                }
+                    logException(e);                }
 
                 return jsonResponse;
                 // jsonResponse is automatically passed to onPostExecute by this doInBackground method
@@ -187,20 +197,3 @@ public class MainListActivity extends ListActivity {
 
 
 }
-
-
-
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }*
-//
-//}
