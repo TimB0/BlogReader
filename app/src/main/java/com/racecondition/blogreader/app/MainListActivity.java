@@ -38,7 +38,7 @@ import java.util.HashMap;
 
 public class MainListActivity extends ListActivity {
 
-    public static final int NUMBER_OF_POSTS = 40;
+    public static final int NUMBER_OF_POSTS = 30;
     public static final String TAG = MainListActivity.class.getSimpleName();
     protected JSONObject mBlogData;
     protected ProgressBar mProgressBar;
