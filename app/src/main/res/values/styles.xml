@@ -2,7 +2,11 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+        <item name="android:listViewStyle">@style/AppTheme.LightPurpleBackground</item>
+    </style>
+    
+    <style name="AppTheme.LightPurpleBackground">
+        <item name="android:background">@color/light_purple_background</item>
     </style>
 
 </resources>

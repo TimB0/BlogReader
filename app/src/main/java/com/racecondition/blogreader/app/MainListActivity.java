@@ -98,6 +98,8 @@ public class MainListActivity extends ListActivity {
         return isAvailable;
     }
 
+
+
     public void handleBlogResponse() {
         mProgressBar.setVisibility(View.INVISIBLE);
 
@@ -128,8 +130,8 @@ public class MainListActivity extends ListActivity {
                 SimpleAdapter adapter = new SimpleAdapter(this, blogPosts,
                         android.R.layout.simple_list_item_2,
                         keys, ids);
-
                 setListAdapter(adapter);
+
             } catch (JSONException e) {
                 logException(e);
             }
@@ -189,12 +191,14 @@ public class MainListActivity extends ListActivity {
                 // jsonResponse is automatically passed to onPostExecute by this doInBackground method
             }
 
-            @Override
-            protected void onPostExecute(JSONObject result) {
-                mBlogData = result;
-                handleBlogResponse();
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            mBlogData = result;
+            handleBlogResponse();
 
-            }
+        }
+
+
 
         }
 
