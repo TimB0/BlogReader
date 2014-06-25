@@ -59,6 +59,10 @@ public class MainListActivity extends ListActivity {
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
 
+        getBlogPosts();
+    }
+
+    private void getBlogPosts() {
         if (isNetworkAvailable()) {
             mProgressBar.setVisibility(View.VISIBLE);
             GetBlogPostsTask getBlogPostsTask = new GetBlogPostsTask();
@@ -156,7 +160,7 @@ public class MainListActivity extends ListActivity {
     protected SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
-            Toast.makeText(MainListActivity.this, "We're Refreshing!", Toast.LENGTH_SHORT).show();
+            getBlogPosts();
         }
     };
 
@@ -204,6 +208,11 @@ public class MainListActivity extends ListActivity {
         @Override
         protected void onPostExecute(JSONObject result) {
             mBlogData = result;
+
+            if (mSwipeRefreshLayout.isRefreshing()) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+
             handleBlogResponse();
 
         }
