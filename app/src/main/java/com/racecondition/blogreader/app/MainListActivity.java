@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +43,7 @@ public class MainListActivity extends ListActivity {
     public static final String TAG = MainListActivity.class.getSimpleName();
     protected JSONObject mBlogData;
     protected ProgressBar mProgressBar;
+    protected SwipeRefreshLayout mSwipeRefreshLayout;
 
     private final String KEY_TITLE = "title";
     private final String KEY_AUTHOR = "author";
@@ -54,6 +56,8 @@ public class MainListActivity extends ListActivity {
         setContentView(R.layout.activity_main_list);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+        mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
 
         if (isNetworkAvailable()) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -62,7 +66,6 @@ public class MainListActivity extends ListActivity {
         } else {
             Toast.makeText(this, "Network is unavailable!", Toast.LENGTH_LONG).show();
         }
-        //Toast.makeText(this, getString(R.string.no_items), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -150,6 +153,13 @@ public class MainListActivity extends ListActivity {
         emptyTextView.setText(getString(R.string.no_items));
     }
 
+    protected SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            Toast.makeText(MainListActivity.this, "We're Refreshing!", Toast.LENGTH_SHORT).show();
+        }
+    };
+
     private class GetBlogPostsTask extends AsyncTask<Object, Void, JSONObject> {
 
             @Override
@@ -201,6 +211,8 @@ public class MainListActivity extends ListActivity {
 
 
         }
+
+
 
 
 }
